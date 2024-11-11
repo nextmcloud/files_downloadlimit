@@ -3,25 +3,8 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2021 John Molakvoæ <skjnldsv@protonmail.com>
- *
- * @author John Molakvoæ <skjnldsv@protonmail.com>
- *
- * @license GNU AGPL version 3 or any later version
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
+ * SPDX-FileCopyrightText: 2021 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
 namespace OCA\Files_DownloadLimit\Controller;
@@ -30,8 +13,8 @@ use OCA\Files_DownloadLimit\AppInfo\Application;
 use OCA\Files_DownloadLimit\Db\Limit;
 use OCA\Files_DownloadLimit\Db\LimitMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 use OCP\AppFramework\Http\DataResponse;
-use OCP\AppFramework\Http\Response;
 use OCP\AppFramework\OCS\OCSBadRequestException;
 use OCP\AppFramework\OCS\OCSNotFoundException;
 use OCP\AppFramework\OCSController;
@@ -43,37 +26,21 @@ use OCP\Share\IManager;
 use OCP\Share\IShare;
 
 class ApiController extends OCSController {
-
-	/** @var IConfig */
-	private $config;
-
-	/** @var IManager */
-	private $shareManager;
-
-	/** @var IUserSession */
-	private $userSession;
-
-	/** @var LimitMapper */
-	private $mapper;
-
-	public function __construct(IRequest $request,
-								IConfig $config,
-								IManager $shareManager,
-								IUserSession $userSession,
-								LimitMapper $mapper) {
+	public function __construct(
+		IRequest $request,
+		private IConfig $config,
+		private IManager $shareManager,
+		private IUserSession $userSession,
+		private LimitMapper $mapper,
+	) {
 		parent::__construct(Application::APP_ID, $request);
-		$this->config = $config;
-		$this->shareManager = $shareManager;
-		$this->userSession = $userSession;
-		$this->mapper = $mapper;
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
 	 * Set the download limit for a given link share
 	 */
-	public function setDownloadLimit(string $token, int $limit): Response {
+	#[NoAdminRequired]
+	public function setDownloadLimit(string $token, int $limit): DataResponse {
 		$this->validateToken($token);
 
 		// Count needs to be at least 1
@@ -106,11 +73,10 @@ class ApiController extends OCSController {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
 	 * Remove the download limit for a given link share
 	 */
-	public function removeDownloadLimit(string $token): Response {
+	#[NoAdminRequired]
+	public function removeDownloadLimit(string $token): DataResponse {
 		$this->validateToken($token);
 
 		try {
@@ -119,16 +85,15 @@ class ApiController extends OCSController {
 		} catch (DoesNotExistException $e) {
 			// Ignore if does not exists
 		}
-	
+
 		return new DataResponse();
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
 	 * Get the download limit for a given link share
 	 */
-	public function getDownloadLimit(string $token): Response {
+	#[NoAdminRequired]
+	public function getDownloadLimit(string $token): DataResponse {
 		$this->validateToken($token);
 
 		try {
@@ -155,8 +120,8 @@ class ApiController extends OCSController {
 			throw new OCSNotFoundException('Unknown share');
 		}
 
-		// Make sure the user is owner of the share or initiator
-		if ($user == null || ($share->getShareOwner() !== $user->getUID() && $share->getSharedBy() !== $user->getUID())) {
+		// Make sure the user is the owner of the share
+		if ($user == null || ($share->getSharedBy() !== $user->getUID())) {
 			throw new OCSNotFoundException('Unknown share');
 		}
 

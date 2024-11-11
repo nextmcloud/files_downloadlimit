@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+<files psalm-version="5.23.1@8471a896ccea3526b26d082f4461eeea467f10a4">
+	<file src="lib/Listener/BeforeTemplateRenderedListener.php">
+		<InvalidTemplateParam>
+			<code>IEventListener</code>
+		</InvalidTemplateParam>
+		<ImplementedParamTypeMismatch>
+			<code>$event</code>
+		</ImplementedParamTypeMismatch>
+	</file>
+	<file src="lib/Listener/LoadSidebarListener.php">
+		<InvalidTemplateParam>
+			<code>IEventListener</code>
+		</InvalidTemplateParam>
+		<ImplementedParamTypeMismatch>
+			<code>$event</code>
+		</ImplementedParamTypeMismatch>
+	</file>
+	<file src="lib/Listener/ShareLinkAccessedListener.php">
+		<InvalidTemplateParam>
+			<code>IEventListener</code>
+		</InvalidTemplateParam>
+		<ImplementedParamTypeMismatch>
+			<code>$event</code>
+		</ImplementedParamTypeMismatch>
+	</file>
+	<file src="lib/Listener/SabrePluginAddListener.php">
+		<InvalidTemplateParam>
+			<code>IEventListener</code>
+		</InvalidTemplateParam>
+		<ImplementedParamTypeMismatch>
+			<code>$event</code>
+		</ImplementedParamTypeMismatch>
+		<MissingDependency>
+			<code>PropFindPlugin</code>
+		</MissingDependency>
+	</file>
+</files>
